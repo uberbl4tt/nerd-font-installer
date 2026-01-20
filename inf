@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Configuration
+VERSION="v3.4.0"
+FONT_DIR="$HOME/.local/share/fonts/nerd-fonts"
+TEMP_DIR="/tmp/nerd-font-installer"
+
+# Check if a font name was provided
+if [ -z "$1" ]; then
+    echo "u forgot to tell me which font!! (｡•́︿•̀｡)"
+    echo "usage: inf <fontname>  # ⚠️ font names are CASE SENSITIVE!"
+    exit 1
+fi
+
+# Use font name exactly as provided 
+FONT_NAME="$1"
+
+URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${VERSION}/${FONT_NAME}.zip"
+
+echo "searching for the shinies... ( •̀ω•́ )✧"
+
+# Create directories
+mkdir -p "$FONT_DIR"
+mkdir -p "$TEMP_DIR"
+
+# Download the font
+if wget -q --show-progress -O "$TEMP_DIR/$FONT_NAME.zip" "$URL"; then
+    echo "unpacking the magic font box... 📦"
+    
+    # Unzip to font directory
+    unzip -oq "$TEMP_DIR/$FONT_NAME.zip" -d "$FONT_DIR/$FONT_NAME"
+    
+    # Update font cache
+    echo "telling the system about your cool new look... 🗣️"
+    fc-cache -f "$FONT_DIR"
+    
+    # Clean up
+    rm -rf "$TEMP_DIR"
+    
+    echo "your font is installed and ready to use! ٩(^ᗜ^ )و ´-"
+else
+    echo "oh noes! your font is not found :("
+    echo "⚠️ font names are CASE SENSITIVE! double-check the spelling on https://www.nerdfonts.com/font-downloads"
+    
+    # Clean up
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
